@@ -1,0 +1,206 @@
+<html>
+<head>
+    <title>QCM Using Open Trivia API</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            text-align: center; 
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        .header img {
+            width: 130px;
+            height: auto;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .hidden { display: none; }
+        #score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #333; }
+        .timer { color: red; font-weight: bold; margin-top: 10px; }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #0056b3; }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .question { margin-bottom: 20px; }
+        .question p { font-size: 18px; font-weight: bold; }
+        .question label { display: block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="um6p.png" alt="UM6P Logo">
+        <img src="cc.png" alt="CC Logo">
+    </div>
+    <div class="container">
+        <h2 id="config-title">Configurer le QCM</h2>
+        <form id="quiz-config">
+            <label>Nombre de Questions:</label>
+            <input type="number" id="num-questions" value="10" min="1" max="50">
+            
+            <label>Catégorie:</label>
+            <select id="category">
+                <option value="">Toute Catégorie</option>
+                <option value="9">Culture Générale</option>
+                <option value="10">Livres</option>
+                <option value="11">Films</option>
+                <option value="12">Musique</option>
+                <option value="13">Théâtre</option>
+                <option value="14">Télévision</option>
+                <option value="15">Jeux Vidéo</option>
+                <option value="16">Cartes et Jeux de Société</option>
+                <option value="17">Sciences et Nature</option>
+                <option value="18">Science Informatique</option>
+                <option value="19">Mathématiques</option>
+                <option value="20">Mythologie</option>
+                <option value="21">Sports</option>
+                <option value="22">Géographie</option>
+                <option value="23">Histoire</option>
+                <option value="24">Politique</option>
+                <option value="25">Art</option>
+                <option value="26">Célébrités</option>
+                <option value="27">Animaux</option>
+                <option value="28">Véhicules</option>
+                <option value="29">Comics</option>
+                <option value="30">Gadgets</option>
+                <option value="31">Anime et Manga</option>
+                <option value="32">Dessins Animés</option>
+            </select>
+            
+            <label>Difficulté:</label>
+            <select id="difficulty">
+                <option value="">Toute Difficulté</option>
+                <option value="easy">Facile</option>
+                <option value="medium">Moyen</option>
+                <option value="hard">Difficile</option>
+            </select>
+            
+            <label>Type de Question:</label>
+            <select id="question-type">
+                <option value="">Tout Type</option>
+                <option value="multiple">Choix Multiple</option>
+                <option value="boolean">Vrai/Faux</option>
+            </select>
+            
+            <button type="submit">Lancer le QCM</button>
+        </form>
+        <div id="quiz-container" class="hidden"></div>
+        <div id="score" class="hidden">Score: <span id="score-value">0</span>/<span id="total-questions">0</span></div>
+    </div>
+    <script>
+        document.getElementById('quiz-config').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            document.getElementById('config-title').classList.add('hidden');
+            document.getElementById('quiz-config').classList.add('hidden');
+            
+            const numQuestions = document.getElementById('num-questions').value;
+            const category = document.getElementById('category').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const type = document.getElementById('question-type').value;
+            
+            let url = `https://opentdb.com/api.php?amount=${numQuestions}`;
+            if (category) url += `&category=${category}`;
+            if (difficulty) url += `&difficulty=${difficulty}`;
+            if (type) url += `&type=${type}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error("Erreur lors de la récupération des questions.");
+                }
+                const data = await response.json();
+                if (data.response_code !== 0 || !data.results || data.results.length === 0) {
+                    throw new Error("Aucune question disponible pour cette configuration.");
+                }
+                startQuiz(data.results);
+            } catch (error) {
+                alert(error.message);
+                document.getElementById('config-title').classList.remove('hidden');
+                document.getElementById('quiz-config').classList.remove('hidden');
+            }
+        });
+
+        function startQuiz(questions) {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = '';
+            let currentQuestion = 0;
+            let score = 0;
+            let timer;
+            document.getElementById('total-questions').textContent = questions.length;
+            
+            function showQuestion() {
+                if (currentQuestion >= questions.length) {
+                    document.getElementById('score-value').textContent = score;
+                    document.getElementById('score').classList.remove('hidden');
+                    return;
+                }
+                const q = questions[currentQuestion];
+                let options = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
+                
+                quizContainer.innerHTML = `
+                    <div class='question'>
+                        <p>${q.question}</p>
+                        ${options.map(opt => `<label><input type='radio' name='q' value='${opt}'> ${opt}</label>`).join('')}
+                        <div class='timer'>Temps restant: <span class='time'>10</span>s</div>
+                    </div>
+                    <button id='next-btn'>Suivant</button>
+                `;
+                
+                document.getElementById('next-btn').addEventListener('click', nextQuestion);
+                startTimer();
+            }
+            
+            function startTimer() {
+                let timeLeft = 10;
+                const timerElement = document.querySelector('.time');
+                timerElement.textContent = timeLeft;
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                clearInterval(timer);
+                const selected = document.querySelector(`input[name='q']:checked`);
+                if (selected && selected.value === questions[currentQuestion].correct_answer) {
+                    score++;
+                }
+                currentQuestion++;
+                showQuestion();
+            }
+
+            quizContainer.classList.remove('hidden');
+            showQuestion();
+        }
+    </script>
+</body>
+</html>

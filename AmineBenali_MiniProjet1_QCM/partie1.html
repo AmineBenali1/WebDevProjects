@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QCM Local</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            text-align: center; 
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        .header img {
+            width: 130px;
+            height: auto;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .hidden { display: none; }
+        #score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #333; }
+        .timer { color: red; font-weight: bold; margin-top: 10px; }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #0056b3; }
+        .question { margin-bottom: 20px; }
+        .question p { font-size: 18px; font-weight: bold; }
+        .question label { display: block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="um6p.png" alt="UM6P Logo">
+        <img src="cc.png" alt="CC Logo">
+    </div>
+    <div class="container">
+        <h2>Mini QCM</h2>
+        <button id="start-quiz">Lancer le QCM</button>
+        <div id="quiz-container" class="hidden"></div>
+        <div id="score" class="hidden">Score: <span id="score-value">0</span>/<span id="total-questions">0</span></div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "Quelle est la capitale de la France ?",
+                options: ["Paris", "Londres", "Berlin", "Madrid"],
+                correct: "Paris"
+            },
+            {
+                question: "Combien font 5 + 3 ?",
+                options: ["5", "8", "10", "15"],
+                correct: "8"
+            },
+            {
+                question: "Quelle est la couleur du ciel par temps clair ?",
+                options: ["Rouge", "Bleu", "Vert", "Jaune"],
+                correct: "Bleu"
+            }
+        ];
+
+        document.getElementById('start-quiz').addEventListener('click', function() {
+            this.classList.add('hidden');
+            startQuiz();
+        });
+
+        function startQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = '';
+            let currentQuestion = 0;
+            let score = 0;
+            document.getElementById('total-questions').textContent = questions.length;
+            
+            function showQuestion() {
+                if (currentQuestion >= questions.length) {
+                    document.getElementById('score-value').textContent = score;
+                    document.getElementById('score').classList.remove('hidden');
+                    return;
+                }
+                const q = questions[currentQuestion];
+                let options = q.options.sort(() => Math.random() - 0.5);
+                
+                quizContainer.innerHTML = `
+                    <div class='question'>
+                        <p>${q.question}</p>
+                        ${options.map(opt => `<label><input type='radio' name='q' value='${opt}'> ${opt}</label>`).join('')}
+                        <div class='timer'>Temps restant: <span class='time'>10</span>s</div>
+                    </div>
+                    <button id='next-btn'>Suivant</button>
+                `;
+                
+                document.getElementById('next-btn').addEventListener('click', nextQuestion);
+                startTimer();
+            }
+            
+            function startTimer() {
+                let timeLeft = 10;
+                const timerElement = document.querySelector('.time');
+                timerElement.textContent = timeLeft;
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                const selected = document.querySelector(`input[name='q']:checked`);
+                if (selected && selected.value === questions[currentQuestion].correct) {
+                    score++;
+                }
+                currentQuestion++;
+                showQuestion();
+            }
+
+            quizContainer.classList.remove('hidden');
+            showQuestion();
+        }
+    </script>
+</body>
+</html>

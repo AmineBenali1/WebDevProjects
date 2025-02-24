@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Manipulation de vue</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+	.Rouge{
+		color: red;
+	}
+	.Bleu{
+		color: blue;
+	}
+</style>
+</head>
+<body>
+
+<div id="monapp">
+	<ul>
+		<li>Couleur de la police :</li>
+		Rouge <input type="radio" v-model="color" value="Rouge"><br>
+		Bleu <input type="radio" v-model="color" value="Bleu">
+		<li>Afficher/cacher le paragraphe 
+			<input type="checkbox" v-model="aff">
+		</li>
+		<p v-if="aff" :class="color">
+			Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam pariatur ‹ mollitia et,<br>
+			inventore delectus. Doloribus laudantium maiores at necessiti ipsum distinctio?
+		</p>
+
+	</ul>
+</div>
+
+
+<script>
+	const appli = {
+		data () {
+				return {
+					color : [],
+					aff : true
+				}
+			}
+	};
+	
+Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>

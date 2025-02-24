@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Manipulation de vue</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+	p{
+		color: red;
+		font-weight: bold;
+	}
+</style>
+</head>
+<body>
+
+<div id="monapp">
+<label>Entrer une chaine de caractères sans espaces : </label>
+<input type="text" v-model="chaine" @input="checkSpaces">
+<p>{{message}}</p>
+</div>
+
+
+<script>
+	const appli = {
+		data () {
+				return {
+					chaine : '',
+					message : ''
+				}
+			},
+		methods:{
+			checkSpaces() {
+				if(this.chaine.includes(' ')) this.message = "Pas d'espaces";
+				else this.message='';
+		}
+
+		}
+	};
+	
+Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>

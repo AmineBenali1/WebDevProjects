@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Manipulation de vue</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+	button{
+		width: 80px;
+		height: 30px;
+		margin: 10px;
+	}
+</style>
+</head>
+<body>
+
+<div id="monapp">
+	<button @click = "compteur++">++</button>
+	<span>{{compteur}}</span>
+	<button @click = "compteur--">--</button>
+</div>
+
+
+<script>
+	const appli = {
+		data () {
+				return {
+					compteur : 0
+				}
+			},
+	};
+	
+Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>

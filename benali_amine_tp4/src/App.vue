@@ -33,7 +33,7 @@
 			<section class="fiches">
         <div class="pieces" v-for="p in filteredPieces" :key="p.id">
         <h3>{{ p.nom }}</h3>
-        <img :src="p.Image">
+        <img :src="'images/' + p.Image">
         <p>Prix : {{ p.prix }}€</p>
         <p>Catégorie : {{ p.categorie }}</p>
         <p>Disponibilité : {{ p.Disponible ? 'Disponible' : 'Indisponible' }}</p>

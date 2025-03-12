@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Manipulation de vue</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+    input[type="number"]{
+        width: 40px;
+    }
+</style>
+</head>
+<body>
+<div id="monapp">
+    <audio id="son" src="ALRMClok_Reveil electronique sonnerie 1 (ID 0035)_LS.mp3"></audio> 
+    <h1>Gestionnaire des taches hebdomadaires</h1>
+    <h2>il est actuellement <span id="time"></span></h2>
+    <ul>
+        <li v-if="task1">
+            <input type="checkbox" v-model="check1">
+            <input type="number" min="0" max="23" v-model="th1">
+            <input type="number" min="0" max="59" v-model="tm1">
+            <span>commencer la revision</span>
+            <button @click="task1=false;check1=false">-</button>
+        </li>
+        <li v-if="task2">
+            <input type="checkbox" v-model="check2">
+            <input type="number" min="0" max="23" v-model="th2">
+            <input type="number" min="0" max="59" v-model="tm2">
+            <span>Prendre une pause</span>
+            <button @click="task2=false;check2=false">-</button>
+        </li>
+        <li v-if="task3">
+            <input type="checkbox" v-model="check3">
+            <input type="number" min="0" max="23" v-model="th3">
+            <input type="number" min="0" max="59" v-model="tm3">
+            <span>Reprendre la révision</span>
+            <button @click="task3=false;check3=false">-</button>
+        </li>
+        <li v-if="task4">
+            <input type="checkbox" v-model="check4">
+            <input type="number" min="0" max="23" v-model="th4">
+            <input type="number" min="0" max="59" v-model="tm4">
+            <span>Regarder un film</span>
+            <button @click="task4=false;check4=false">-</button>
+        </li>
+    </ul>
+</div>
+
+<script>
+    const appli = {
+        data () {
+            return {
+                task1: true,
+                task2: true,
+                task3: true,
+                task4: true,
+                th1: 0,
+                tm1: 0,
+                check1: true,
+                th2: 0,
+                tm2: 0,
+                check2: true,
+                th3: 0,
+                tm3: 0,
+                check3: true,
+                th4: 0,
+                tm4: 0,
+                check4: true
+            }
+        },
+        methods: {
+            getExactTime() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                const time = document.getElementById('time');
+                time.innerHTML = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                return [hours, minutes];
+            },
+            alarme() {
+                const son = document.getElementById('son');
+                const time = this.getExactTime();
+                if (time[0] == this.th1 && time[1] == this.tm1 && this.check1) {
+                    son.play();
+                    alert("Commencer la révision");
+                    son.pause();
+                    son.currentTime = 0;
+                    this.check1 = false;
+                    this.task1 = false;
+                }
+                if (time[0] == this.th2 && time[1] == this.tm2 && this.check2) {
+                    son.play();
+                    alert("Prendre une pause");
+                    son.pause();
+                    son.currentTime = 0;
+                    this.check2 = false;
+                    this.task2 = false;
+                }
+                if (time[0] == this.th3 && time[1] == this.tm3 && this.check3) {
+                    son.play();
+                    alert("Reprendre la révision");
+                    son.pause();
+                    son.currentTime = 0;
+                    this.check3 = false;
+                    this.task3 = false;
+                }
+                if (time[0] == this.th4 && time[1] == this.tm4 && this.check4) {
+                    son.play();
+                    alert("Regarder un film");
+                    son.pause();
+                    son.currentTime = 0;
+                    this.check4 = false;
+                    this.task4 = false;
+                }
+            }
+        },
+        mounted() {
+            setInterval(this.alarme, 1000);
+            setInterval(this.getExactTime, 1000);
+        }
+    };
+    Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>

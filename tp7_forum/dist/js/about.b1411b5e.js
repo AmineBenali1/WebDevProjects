@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunktp7_forum"]=self["webpackChunktp7_forum"]||[]).push([[594],{603:function(u,n,t){t.r(n),t.d(n,{default:function(){return f}});var r=t(6768);const a={class:"about"};function e(u,n){return(0,r.uX)(),(0,r.CE)("div",a,n[0]||(n[0]=[(0,r.Lk)("h1",null,"This is an about page",-1)]))}var s=t(1241);const c={},o=(0,s.A)(c,[["render",e]]);var f=o}}]);
+//# sourceMappingURL=about.b1411b5e.js.map
